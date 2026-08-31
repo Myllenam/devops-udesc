@@ -1,0 +1,74 @@
+services:
+
+  postgres-livros:
+    image: postgres:16-alpine
+    container_name: livros-db
+
+    environment:
+      POSTGRES_DB: livros_db
+      POSTGRES_USER: livros_user
+      POSTGRES_PASSWORD: livros_pass
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - livros_data:/var/lib/postgresql/data
+
+    networks:
+      - biblioteca-net
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U livros_user -d livros_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  livros:
+    build:
+      context: ./livros
+      dockerfile: Dockerfile
+
+    container_name: livros
+
+    depends_on:
+      postgres-livros:
+        condition: service_healthy
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-livros:5432/livros_db
+      SPRING_DATASOURCE_USERNAME: livros_user
+      SPRING_DATASOURCE_PASSWORD: livros_pass
+
+    ports:
+      - "8081:8080"
+
+    networks:
+      - biblioteca-net
+
+
+  api-gateway:
+    image: nginx:latest
+    container_name: api-gateway-2
+
+    volumes:
+      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - livros
+
+    networks:
+      - biblioteca-net
+
+
+networks:
+  biblioteca-net:
+    driver: bridge
+
+
+volumes:
+  livros_data:
