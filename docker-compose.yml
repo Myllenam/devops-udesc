@@ -1,48 +1,100 @@
 services:
 
-  postgres-livros:
+  postgres-usuarios:
     image: postgres:16-alpine
-    container_name: livros-db
+    container_name: usuarios-db
 
     environment:
-      POSTGRES_DB: livros_db
-      POSTGRES_USER: livros_user
-      POSTGRES_PASSWORD: livros_pass
+      POSTGRES_DB: usuarios_db
+      POSTGRES_USER: usuarios_user
+      POSTGRES_PASSWORD: usuarios_pass
 
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
     volumes:
-      - livros_data:/var/lib/postgresql/data
+      - usuarios_data:/var/lib/postgresql/data
 
     networks:
       - biblioteca-net
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U livros_user -d livros_db"]
+      test: ["CMD-SHELL", "pg_isready -U usuarios_user -d usuarios_db"]
       interval: 5s
       timeout: 5s
       retries: 5
 
 
-  livros:
+  usuarios:
     build:
-      context: ./livros
+      context: ./usuarios
       dockerfile: Dockerfile
 
-    container_name: livros
+    container_name: usuarios
 
     depends_on:
-      postgres-livros:
+      postgres-usuarios:
         condition: service_healthy
 
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-livros:5432/livros_db
-      SPRING_DATASOURCE_USERNAME: livros_user
-      SPRING_DATASOURCE_PASSWORD: livros_pass
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-usuarios:5432/usuarios_db
+      SPRING_DATASOURCE_USERNAME: usuarios_user
+      SPRING_DATASOURCE_PASSWORD: usuarios_pass
+      AUTH_SERVICE_URL: http://auth:8080
 
     ports:
-      - "8081:8080"
+      - "8082:8080"
+
+    networks:
+      - biblioteca-net
+
+
+  postgres-auth:
+    image: postgres:16-alpine
+    container_name: auth-db
+
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+
+    ports:
+      - "5434:5432"
+
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+
+    networks:
+      - biblioteca-net
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+
+    container_name: auth
+
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: auth_user
+      SPRING_DATASOURCE_PASSWORD: auth_pass
+      USUARIOS_SERVICE_URL: http://usuarios:8080
+      JWT_SECRET: troque-este-segredo-por-uma-chave-forte-de-no-minimo-256-bits-em-producao
+      JWT_EXPIRATION_MS: 3600000
+
+    ports:
+      - "8083:8080"
 
     networks:
       - biblioteca-net
@@ -59,7 +111,8 @@ services:
       - "80:80"
 
     depends_on:
-      - livros
+      - usuarios
+      - auth
 
     networks:
       - biblioteca-net
@@ -71,4 +124,5 @@ networks:
 
 
 volumes:
-  livros_data:
+  usuarios_data:
+  auth_data:
