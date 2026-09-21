@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/emprestimos")
+@RequestMapping("/emprestimos")
 public class EmprestimoController {
 
     private final EmprestimoSagaOrchestrator orchestrator;

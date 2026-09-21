@@ -50,6 +50,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-livros:5432/livros_db
       SPRING_DATASOURCE_USERNAME: livros_user
       SPRING_DATASOURCE_PASSWORD: livros_pass
+      AUTH_SERVICE_URL: http://auth:8080
       SPRING_RABBITMQ_HOST: rabbitmq   # <- nome do serviço do RabbitMQ no compose
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
