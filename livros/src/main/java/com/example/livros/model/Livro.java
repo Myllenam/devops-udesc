@@ -53,6 +53,7 @@ public class Livro {
     public boolean estaDisponivel() {
         return quantidadeDisponivel != null && quantidadeDisponivel > 0;
     }
+    
 
     public void decrementarDisponivel() {
         if (!estaDisponivel()) {

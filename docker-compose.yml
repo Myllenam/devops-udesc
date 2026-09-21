@@ -1,5 +1,123 @@
 services:
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    
+      - "15672:15672"  # painel web (usuário/senha padrão: guest/guest)
+    networks:
+      - biblioteca-net
+
+  postgres-livros:
+    image: postgres:16-alpine
+    container_name: livros-db
+
+    environment:
+      POSTGRES_DB: livros_db
+      POSTGRES_USER: livros_user
+      POSTGRES_PASSWORD: livros_pass
+
+    ports:
+      - "5439:5432"
+
+    volumes:
+      - livros_data:/var/lib/postgresql/data
+
+    networks:
+      - biblioteca-net
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U livros_user -d livros_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  livros:
+    build:
+      context: ./livros
+      dockerfile: Dockerfile
+
+    container_name: livros
+
+    depends_on:
+      postgres-livros:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-livros:5432/livros_db
+      SPRING_DATASOURCE_USERNAME: livros_user
+      SPRING_DATASOURCE_PASSWORD: livros_pass
+      SPRING_RABBITMQ_HOST: rabbitmq   # <- nome do serviço do RabbitMQ no compose
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
+    ports:
+      - "8081:8080"
+
+    networks:
+      - biblioteca-net
+
+
+  postgres-emprestimos:
+    image: postgres:16-alpine
+    container_name: emprestimos-db
+
+    environment:
+      POSTGRES_DB: emprestimos_db
+      POSTGRES_USER: emprestimos_user
+      POSTGRES_PASSWORD: emprestimos_pass
+
+    ports:
+      - "5440:5432"
+
+    volumes:
+      - emprestimos_data:/var/lib/postgresql/data
+
+    networks:
+      - biblioteca-net
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U emprestimos_user -d emprestimos_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  emprestimos:
+    build:
+      context: ./emprestimos
+      dockerfile: Dockerfile
+
+    container_name: emprestimos
+
+    depends_on:
+      postgres-emprestimos:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-emprestimos:5432/emprestimos_db
+      SPRING_DATASOURCE_USERNAME: emprestimos_user
+      SPRING_DATASOURCE_PASSWORD: emprestimos_pass
+      SPRING_RABBITMQ_HOST: rabbitmq   # <- nome do serviço do RabbitMQ no compose
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    
+      
+
+    ports:
+      - "8085:8080"
+
+    networks:
+      - biblioteca-net
+
+
+
   postgres-usuarios:
     image: postgres:16-alpine
     container_name: usuarios-db
@@ -35,15 +153,21 @@ services:
     depends_on:
       postgres-usuarios:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-usuarios:5432/usuarios_db
       SPRING_DATASOURCE_USERNAME: usuarios_user
       SPRING_DATASOURCE_PASSWORD: usuarios_pass
       AUTH_SERVICE_URL: http://auth:8080
+      SPRING_RABBITMQ_HOST: rabbitmq   # <- nome do serviço do RabbitMQ no compose
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
 
     ports:
-      - "8082:8080"
+      - "8082:8084"
 
     networks:
       - biblioteca-net
@@ -126,3 +250,5 @@ networks:
 volumes:
   usuarios_data:
   auth_data:
+  livros_data:
+  emprestimos_data:

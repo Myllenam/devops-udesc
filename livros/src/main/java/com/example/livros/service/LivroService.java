@@ -31,8 +31,7 @@ public class LivroService {
                 dto.isbn(),
                 dto.anoPublicacao(),
                 dto.quantidadeDisponivel(),
-                dto.quantidadeTotal()
-        );
+                dto.quantidadeTotal());
 
         Livro salvo = livroRepository.save(livro);
         return toResponseDTO(salvo);
@@ -94,7 +93,14 @@ public class LivroService {
                 livro.getIsbn(),
                 livro.getAnoPublicacao(),
                 livro.getQuantidadeDisponivel(),
-                livro.getQuantidadeTotal()
-        );
+                livro.getQuantidadeTotal());
     }
+
+    @Transactional
+    public void devolverEmprestimo(Long id) {
+        Livro livro = buscarEntidadePorId(id);
+        livro.incrementarDisponivel();
+        livroRepository.save(livro);
+    }
+
 }
