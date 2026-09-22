@@ -2,6 +2,8 @@ package com.example.emprestimos.controller;
 
 import com.example.emprestimos.dto.EmprestimoRequestDTO;
 import com.example.emprestimos.dto.EmprestimoResponseDTO;
+import com.example.emprestimos.messaging.dto.DevolverLivroCommand;
+import com.example.emprestimos.messaging.publisher.SagaCommandPublisher;
 import com.example.emprestimos.model.Emprestimo;
 import com.example.emprestimos.model.SagaEmprestimo;
 import com.example.emprestimos.model.StatusEmprestimo;
@@ -21,10 +23,14 @@ public class EmprestimoController {
 
     private final EmprestimoSagaOrchestrator orchestrator;
     private final EmprestimoRepository emprestimoRepository;
+    private final SagaCommandPublisher publisher; // NOVO
 
-    public EmprestimoController(EmprestimoSagaOrchestrator orchestrator, EmprestimoRepository emprestimoRepository) {
+    public EmprestimoController(EmprestimoSagaOrchestrator orchestrator,
+            EmprestimoRepository emprestimoRepository,
+            SagaCommandPublisher publisher) {
         this.orchestrator = orchestrator;
         this.emprestimoRepository = emprestimoRepository;
+        this.publisher = publisher;
     }
 
     // Dispara a SAGA - retorna 202 Accepted, pois o processo é assíncrono
@@ -64,6 +70,20 @@ public class EmprestimoController {
     @GetMapping("/quantidade/status/{status}")
     public ResponseEntity<Long> quantidadePorStatus(@PathVariable StatusEmprestimo status) {
         return ResponseEntity.ok(emprestimoRepository.countByStatus(status));
+    }
+
+    // NOVO - o endpoint que estava faltando
+    @PatchMapping("/{id}/devolucao")
+    public ResponseEntity<Void> devolverLivro(@PathVariable Long id) {
+        Emprestimo emprestimo = emprestimoRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Empréstimo não encontrado: " + id));
+
+        emprestimo.marcarComoDevolvido();
+        emprestimoRepository.save(emprestimo);
+
+        publisher.enviarDevolverLivro(new DevolverLivroCommand(emprestimo.getLivroId()));
+
+        return ResponseEntity.noContent().build();
     }
 
     private EmprestimoResponseDTO toResponseDTO(SagaEmprestimo saga) {
