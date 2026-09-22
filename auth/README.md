@@ -12,12 +12,10 @@ Sobe o `auth` (porta 8083), seu banco (`auth-db`, porta 5434) e o `usuarios` (po
 
 ## Testes
 
-- **`infrastructure/security/JwtServiceTest`** e o `contextLoads` padrão — não precisam de nada rodando, `mvn test` já resolve.
-- **`integration/AuthApiIntegrationTest`** — chamadas HTTP reais contra `auth` e `usuarios` já rodando. **Exige `docker compose up -d` de pé antes de rodar `mvn test`**, senão falha com "Connection refused".
+- **`infrastructure/security/JwtServiceTest`** — unitário puro, sem Spring, sem banco, sem mock.
+- **Testes de use case** (`application/usecase/*Test`) — unitários com Mockito, mockando o repositório e os clients externos.
+- **Teste de controller** (`presentation/controller/AuthControllerTest`) — slice `@WebMvcTest`, com os use cases mockados via `@MockitoBean`.
+- **`AuthApplicationTests.contextLoads`** — sobe o contexto Spring completo e precisa de um Postgres real ouvindo em `localhost:5434` (ou seja, precisa do `docker compose up -d` de pé, ao menos para o `auth-db`).
 
-Por padrão aponta para `http://localhost:8083` (auth). Para rodar contra os nomes dos serviços na rede interna do Docker:
-
-```bash
-AUTH_URL=http://auth:8080 USUARIOS_URL=http://usuarios:8080 mvn test
-```
+`mvn test` roda tudo isso normalmente, exceto o `contextLoads`, que só passa com o `docker compose` de pé.
 

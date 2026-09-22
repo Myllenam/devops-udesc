@@ -12,14 +12,10 @@ Sobe o `usuarios` (porta 8082), seu banco (`usuarios-db`, porta 5433) e as depen
 
 ## Testes
 
-Os testes deste módulo são de dois tipos:
+- **Testes de domínio** (`domain/entity/UsuarioTest`) — unitários puros, sem Spring, sem banco, sem mock.
+- **Testes de use case** (`application/usecase/*Test`) — unitários com Mockito, mockando o repositório e os clients externos.
+- **Teste de controller** (`presentation/controller/UsuarioControllerTest`) — slice `@WebMvcTest`, com os use cases mockados via `@MockitoBean`.
+- **`UsuariosApplicationTests.contextLoads`** — sobe o contexto Spring completo e precisa de um Postgres real ouvindo em `localhost:5433` (ou seja, precisa do `docker compose up -d` de pé, ao menos para o `usuarios-db`).
 
-- **Testes de domínio** (`domain/entity/UsuarioTest`) e o `contextLoads` padrão — não precisam de nada rodando, `mvn test` já resolve.
-- **Testes de integração** (`integration/UsuarioApiIntegrationTest`) — fazem chamadas HTTP reais contra os serviços `usuarios` e `auth` já rodando. **Exigem `docker compose up -d` de pé antes de rodar `mvn test`**, senão falham com "Connection refused".
-
-Por padrão os testes de integração apontam para `http://localhost:8082` (usuarios) e `http://localhost:8083` (auth). Para rodá-los contra os nomes dos serviços na rede interna do Docker (por exemplo, para gerar cobertura executando os testes dentro de um container na mesma rede do `docker compose`), sobrescreva via variáveis de ambiente:
-
-```bash
-USUARIOS_URL=http://usuarios:8080 AUTH_URL=http://auth:8080 mvn test
-```
+`mvn test` roda tudo isso normalmente, exceto o `contextLoads`, que só passa com o `docker compose` de pé.
 
