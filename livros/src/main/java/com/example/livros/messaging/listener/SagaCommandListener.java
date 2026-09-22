@@ -37,4 +37,9 @@ public class SagaCommandListener {
     public void compensarLivro(CompensarLivroCommand command) {
         livroService.devolverEmprestimo(command.livroId());
     }
+
+    @RabbitListener(queues = RabbitMQConfig.DEVOLVER_LIVRO_QUEUE)
+    public void devolverLivro(DevolverLivroCommand command) {
+        livroService.devolverEmprestimo(command.livroId());
+    }
 }

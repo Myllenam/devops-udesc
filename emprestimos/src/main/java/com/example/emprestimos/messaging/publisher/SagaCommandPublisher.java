@@ -34,4 +34,11 @@ public class SagaCommandPublisher {
                 RabbitMQConfig.ROUTING_COMPENSAR_LIVRO,
                 command);
     }
+
+    public void enviarDevolverLivro(DevolverLivroCommand command) {
+    rabbitTemplate.convertAndSend(
+            RabbitMQConfig.SAGA_EXCHANGE,
+            RabbitMQConfig.ROUTING_DEVOLVER_LIVRO,
+            command);
+}
 }

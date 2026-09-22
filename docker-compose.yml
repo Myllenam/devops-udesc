@@ -104,6 +104,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-emprestimos:5432/emprestimos_db
       SPRING_DATASOURCE_USERNAME: emprestimos_user
       SPRING_DATASOURCE_PASSWORD: emprestimos_pass
+      AUTH_SERVICE_URL: http://auth:8080
       SPRING_RABBITMQ_HOST: rabbitmq   # <- nome do serviço do RabbitMQ no compose
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest

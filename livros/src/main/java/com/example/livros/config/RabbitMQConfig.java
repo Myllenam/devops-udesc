@@ -12,9 +12,12 @@ public class RabbitMQConfig {
     public static final String SAGA_EXCHANGE = "saga.emprestimo.exchange";
     public static final String RESERVAR_LIVRO_QUEUE = "livros.reservar.queue";
     public static final String COMPENSAR_LIVRO_QUEUE = "livros.compensar.queue";
+    public static final String DEVOLVER_LIVRO_QUEUE = "livros.devolver.queue";
+
     public static final String ROUTING_RESERVAR_LIVRO = "comando.livros.reservar";
     public static final String ROUTING_COMPENSAR_LIVRO = "comando.livros.compensar";
     public static final String ROUTING_RESPOSTA_LIVROS = "resposta.livros";
+    public static final String ROUTING_DEVOLVER_LIVRO = "comando.livros.devolver";
 
     @Bean
     public TopicExchange sagaExchange() {
@@ -39,6 +42,17 @@ public class RabbitMQConfig {
     @Bean
     public Binding bindCompensar() {
         return BindingBuilder.bind(compensarLivroQueue()).to(sagaExchange()).with(ROUTING_COMPENSAR_LIVRO);
+    }
+
+    @Bean
+    public Queue devolverLivroQueue() {
+        return QueueBuilder.durable(DEVOLVER_LIVRO_QUEUE).build();
+    }
+
+    @Bean
+    public Binding bindDevolverLivro() {
+        return BindingBuilder.bind(devolverLivroQueue())
+                .to(sagaExchange()).with(ROUTING_DEVOLVER_LIVRO);
     }
 
     @Bean

@@ -1,7 +1,9 @@
 package com.example.emprestimos.saga;
 
 import com.example.emprestimos.messaging.publisher.SagaCommandPublisher;
+import com.example.emprestimos.model.Emprestimo;
 import com.example.emprestimos.model.SagaEmprestimo;
+import com.example.emprestimos.repository.EmprestimoRepository;
 import com.example.emprestimos.repository.SagaEmprestimoRepository;
 
 import com.example.emprestimos.messaging.dto.CompensarLivroCommand;
@@ -9,6 +11,7 @@ import com.example.emprestimos.messaging.dto.ReservarLivroCommand;
 import com.example.emprestimos.messaging.dto.SagaResponseEvent;
 import com.example.emprestimos.messaging.dto.ValidarUsuarioCommand;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -22,11 +25,13 @@ public class EmprestimoSagaOrchestrator {
 
     private final SagaCommandPublisher publisher;
     private final SagaEmprestimoRepository sagaRepository;
+    private final EmprestimoRepository emprestimoRepository;
 
     public EmprestimoSagaOrchestrator(SagaCommandPublisher publisher,
-            SagaEmprestimoRepository sagaRepository) {
+            SagaEmprestimoRepository sagaRepository, EmprestimoRepository emprestimoRepository) {
         this.publisher = publisher;
         this.sagaRepository = sagaRepository;
+        this.emprestimoRepository = emprestimoRepository;
     }
 
     @Transactional
@@ -65,8 +70,15 @@ public class EmprestimoSagaOrchestrator {
 
         if (evento.sucesso()) {
             saga.avancarPara(SagaStatus.CONCLUIDA);
-            sagaRepository.save(saga);
-            // Empréstimo confirmado - poderia publicar um evento final aqui
+        sagaRepository.save(saga);
+
+        // cria o registro de negócio do empréstimo
+        Emprestimo emprestimo = new Emprestimo(
+                saga.getUsuarioId(),
+                saga.getLivroId(),
+                LocalDateTime.now().plusDays(6) // prazo de devolução
+        );
+        emprestimoRepository.save(emprestimo);
         } else {
             // Usuário inválido → precisa DESFAZER a reserva do livro (compensação)
             saga.avancarPara(SagaStatus.COMPENSANDO);
