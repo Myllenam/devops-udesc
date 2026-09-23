@@ -35,7 +35,7 @@ public class EmprestimoSagaOrchestrator {
 
     @Transactional
     public SagaEmprestimo iniciarSaga(Long livroId, Long usuarioId) {
-        validarRegrasDeNegocio(usuarioId); // NOVO - checagem síncrona, antes de tudo
+        validarRegrasDeNegocio(usuarioId); //  checagem síncrona, antes de tudo
 
         SagaEmprestimo saga = new SagaEmprestimo(livroId, usuarioId);
         saga = sagaRepository.save(saga);

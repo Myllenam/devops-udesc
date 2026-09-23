@@ -23,7 +23,7 @@ public class EmprestimoController {
 
     private final EmprestimoSagaOrchestrator orchestrator;
     private final EmprestimoRepository emprestimoRepository;
-    private final SagaCommandPublisher publisher; // NOVO
+    private final SagaCommandPublisher publisher; 
 
     public EmprestimoController(EmprestimoSagaOrchestrator orchestrator,
             EmprestimoRepository emprestimoRepository,
