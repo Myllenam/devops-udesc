@@ -44,7 +44,8 @@ jobs:
       - name: Build e testes com cobertura
         run: mvn -B clean verify
 
-      - name: Análise SonarCloud
+      - name: Análise SonarQube Cloud
+        if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -52,3 +53,5 @@ jobs:
           mvn -B sonar:sonar
           -Dsonar.projectKey=myllenam_devops-udesc-auth
           -Dsonar.organization=myllenam
+          -Dsonar.host.url=https://sonarcloud.io
+
