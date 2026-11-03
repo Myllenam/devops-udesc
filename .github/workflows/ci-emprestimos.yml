@@ -44,12 +44,17 @@ jobs:
       - name: Build e testes com cobertura
         run: mvn -B clean verify
 
-      - name: Análise SonarCloud
+      - name: Verificar relatório JaCoCo
+        run: |
+          test -f target/site/jacoco/jacoco.xml
+          echo "Relatório JaCoCo encontrado!"
+
+      - name: Análise SonarQube Cloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_EMPRESTIMOS }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >
-          mvn -B sonar:sonar
-          -Dsonar.projectKey=Myllenam_devops-udesc
+          mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          -Dsonar.projectKey=myllenam_devops-udesc-emprestimos
           -Dsonar.organization=myllenam
           -Dsonar.host.url=https://sonarcloud.io
