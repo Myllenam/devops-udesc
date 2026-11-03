@@ -46,10 +46,10 @@ jobs:
 
       - name: Análise SonarCloud
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTH }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >
           mvn -B sonar:sonar
-          -Dsonar.projectKey=SEU_PROJECT_KEY_AUTH
-          -Dsonar.organization=SUA_ORGANIZATION
+          -Dsonar.projectKey=Myllenam_devops-udesc
+          -Dsonar.organization=myllenam
           -Dsonar.host.url=https://sonarcloud.io
