@@ -1,0 +1,43 @@
+
+name: CI - API Gateway
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'api-gateway/**'
+      - '.github/workflows/ci-gateway.yml'
+
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'api-gateway/**'
+      - '.github/workflows/ci-gateway.yml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Construir imagem Docker
+        run: |
+          docker build \
+            -t api-gateway:test \
+            ./api-gateway
+
+      - name: Validar configuração do Nginx
+        run: |
+          docker run --rm \
+            --add-host usuarios:127.0.0.1 \
+            --add-host auth:127.0.0.1 \
+            --add-host livros:127.0.0.1 \
+            --add-host emprestimos:127.0.0.1 \
+            api-gateway:test nginx -t
