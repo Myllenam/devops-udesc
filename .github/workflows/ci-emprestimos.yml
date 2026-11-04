@@ -97,8 +97,8 @@ jobs:
 
       - name: Deploy automático no Render DEV
         if: github.ref == 'refs/heads/develop'
-          env:
-            DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_EMPRESTIMOS_DEV }}
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_EMPRESTIMOS_DEV }}
         run: |
           curl --fail-with-body --show-error --silent \
             --request POST "$DEPLOY_HOOK"
