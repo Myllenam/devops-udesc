@@ -4,6 +4,8 @@ name: CI - Usuarios
 on:
   push:
     branches: [develop, main]
+    tags:
+      - 'v*.*.*'
     paths:
       - 'usuarios/**'
       - '.github/workflows/ci-usuarios.yml'
@@ -59,6 +61,7 @@ jobs:
           -Dsonar.projectKey=myllenam_devops-udesc-usuarios
           -Dsonar.organization=myllenam
           -Dsonar.host.url=https://sonarcloud.io
+
   publish-docker:
     name: Publicar imagem Docker
     runs-on: ubuntu-latest
@@ -85,16 +88,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Gerar tags Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/myllenam/devops-udesc-usuarios
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha,format=long,prefix=sha-
+
       - name: Publicar imagem de Usuários
         uses: docker/build-push-action@v6
         with:
           context: ./usuarios
           file: ./usuarios/Dockerfile
           push: true
-          tags: |
-            ghcr.io/myllenam/devops-udesc-usuarios:${{ github.ref_name }}
-            ghcr.io/myllenam/devops-udesc-usuarios:sha-${{ github.sha }}
-      
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
       - name: Deploy automático no Render DEV
         if: github.ref == 'refs/heads/develop'
         env:
@@ -102,7 +114,7 @@ jobs:
         run: |
           curl --fail-with-body --show-error --silent \
             --request POST "$DEPLOY_HOOK"
-            
+
       - name: Deploy automático no Render HOMOL
         if: github.ref == 'refs/heads/main'
         env:
@@ -110,3 +122,4 @@ jobs:
         run: |
           curl --fail-with-body --show-error --silent \
             --request POST "$DEPLOY_HOOK"
+
