@@ -1,0 +1,49 @@
+
+version: 2
+
+updates:
+  # Dependências Maven dos microsserviços
+  - package-ecosystem: "maven"
+    directory: "/auth"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "maven"
+    directory: "/usuarios"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "maven"
+    directory: "/livros"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "maven"
+    directory: "/emprestimos"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Imagens Docker dos microsserviços e gateway
+  - package-ecosystem: "docker"
+    directories:
+      - "/auth"
+      - "/usuarios"
+      - "/livros"
+      - "/emprestimos"
+      - "/api-gateway"
+      - "/"
+      - "/monitoring"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
