@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 60s
+  scrape_timeout: 50s
+
+scrape_configs:
+  - job_name: "biblioteca-dev"
+    scheme: https
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - biblioteca-auth-dev.onrender.com
+          - biblioteca-usuarios-dev.onrender.com
+          - biblioteca-livros-dev.onrender.com
+          - biblioteca-emprestimos-dev.onrender.com
+        labels:
+          ambiente: DEV
+
+  - job_name: "biblioteca-homol"
+    scheme: https
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - biblioteca-auth-homol.onrender.com
+          - biblioteca-usuarios-homol.onrender.com
+          - biblioteca-livros-homol.onrender.com
+          - biblioteca-emprestimos-homol.onrender.com
+        labels:
+          ambiente: HOMOL
