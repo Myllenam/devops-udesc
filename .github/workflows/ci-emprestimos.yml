@@ -4,6 +4,8 @@ name: CI - Emprestimos
 on:
   push:
     branches: [develop, main]
+    tags:
+      - 'v*.*.*'
     paths:
       - 'emprestimos/**'
       - '.github/workflows/ci-emprestimos.yml'
@@ -59,6 +61,7 @@ jobs:
           -Dsonar.projectKey=myllenam_devops-udesc-emprestimos
           -Dsonar.organization=myllenam
           -Dsonar.host.url=https://sonarcloud.io
+
   publish-docker:
     name: Publicar imagem Docker
     runs-on: ubuntu-latest
@@ -85,15 +88,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Gerar tags Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/myllenam/devops-udesc-emprestimos
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha,format=long,prefix=sha-
+
       - name: Publicar imagem de Empréstimos
         uses: docker/build-push-action@v6
         with:
           context: ./emprestimos
           file: ./emprestimos/Dockerfile
           push: true
-          tags: |
-            ghcr.io/myllenam/devops-udesc-emprestimos:${{ github.ref_name }}
-            ghcr.io/myllenam/devops-udesc-emprestimos:sha-${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Deploy automático no Render DEV
         if: github.ref == 'refs/heads/develop'
@@ -110,3 +122,4 @@ jobs:
         run: |
           curl --fail-with-body --show-error --silent \
             --request POST "$DEPLOY_HOOK"
+

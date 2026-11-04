@@ -4,6 +4,8 @@ name: CI - Auth
 on:
   push:
     branches: [develop, main]
+    tags:
+      - 'v*.*.*'
     paths:
       - 'auth/**'
       - '.github/workflows/ci-auth.yml'
@@ -81,15 +83,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Gerar tags Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/myllenam/devops-udesc-auth
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha,format=long,prefix=sha-
+
       - name: Publicar imagem de Auth
         uses: docker/build-push-action@v6
         with:
           context: ./auth
           file: ./auth/Dockerfile
           push: true
-          tags: |
-            ghcr.io/myllenam/devops-udesc-auth:${{ github.ref_name }}
-            ghcr.io/myllenam/devops-udesc-auth:sha-${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Deploy automático no Render DEV
         if: github.ref == 'refs/heads/develop'
