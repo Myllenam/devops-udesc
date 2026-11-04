@@ -74,6 +74,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-livros:5432/livros_db
       SPRING_DATASOURCE_USERNAME: livros_user
       SPRING_DATASOURCE_PASSWORD: ${LIVROS_DB_PASSWORD:?Defina LIVROS_DB_PASSWORD}
+      
 
       AUTH_SERVICE_URL: http://auth:8080
 
