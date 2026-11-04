@@ -5,4 +5,5 @@ public record ValidarTokenResponse(
         String usuarioId,
         String role,
         String mensagem
+        
 ) {}
