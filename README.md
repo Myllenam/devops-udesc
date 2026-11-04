@@ -348,20 +348,20 @@ Checklist recomendado para a demonstração:
 
 - [x] Deploy automático HOMOL após alteração em `main` demonstrado.
 
-- [x ] Gateway DEV e HOMOL encaminhando chamadas aos microsserviços.
+- [x] Gateway DEV e HOMOL encaminhando chamadas aos microsserviços.
 
-- [ x] PostgreSQL com schemas distintos por ambiente/serviço.
+- [x] PostgreSQL com schemas distintos por ambiente/serviço.
 
-- [x ] Swagger disponível em DEV e indisponível em HOMOL.
+- [x] Swagger disponível em DEV e indisponível em HOMOL.
 
-- [x ] Fluxo da SAGA até um estado final demonstrado, incluindo mensagens do RabbitMQ.
+- [x] Fluxo da SAGA até um estado final demonstrado, incluindo mensagens do RabbitMQ.
 
-- [ x] Isolamento das filas de DEV e HOMOL verificado antes de testes concorrentes.
+- [x] Isolamento das filas de DEV e HOMOL verificado antes de testes concorrentes.
 
-- [x ] Prometheus mostrando os targets dos dois ambientes (DEV confirmado; HOMOL requer conferência final).
+- [x] Prometheus mostrando os targets dos dois ambientes (DEV confirmado; HOMOL requer conferência final).
 
 - [x] Grafana exibindo métricas reais de JVM e HTTP de serviços DEV.
-- [x ] Grafana e Prometheus com as métricas dos quatro serviços HOMOL confirmadas.
+- [x] Grafana e Prometheus com as métricas dos quatro serviços HOMOL confirmadas.
 - [x] Tag Git `v1.0.1` criada e imagens `:1.0.1` dos cinco componentes publicadas no GHCR.
 - [x] Dependabot configurado e abrindo PRs de atualização de dependências (31 observados).
 
