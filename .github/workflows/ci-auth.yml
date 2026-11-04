@@ -94,7 +94,7 @@ jobs:
             type=sha,format=long,prefix=sha-
 
       - name: Publicar imagem de Auth
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./auth
           file: ./auth/Dockerfile
