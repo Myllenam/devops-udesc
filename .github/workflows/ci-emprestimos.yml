@@ -102,3 +102,11 @@ jobs:
         run: |
           curl --fail-with-body --show-error --silent \
             --request POST "$DEPLOY_HOOK"
+
+      - name: Deploy automático no Render HOMOL
+        if: github.ref == 'refs/heads/main'
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_EMPRESTIMOS_HOMOL }}
+        run: |
+          curl --fail-with-body --show-error --silent \
+            --request POST "$DEPLOY_HOOK"
