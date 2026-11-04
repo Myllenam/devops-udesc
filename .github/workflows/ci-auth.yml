@@ -90,3 +90,11 @@ jobs:
           tags: |
             ghcr.io/myllenam/devops-udesc-auth:${{ github.ref_name }}
             ghcr.io/myllenam/devops-udesc-auth:sha-${{ github.sha }}
+
+      - name: Deploy automático no Render DEV
+            if: github.ref == 'refs/heads/develop'
+            env:
+              DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_AUTH_DEV }}
+            run: |
+              curl --fail-with-body --show-error --silent \
+                --request POST "$DEPLOY_HOOK"
