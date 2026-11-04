@@ -288,6 +288,13 @@ services:
     ports:
       - "80:80"
 
+  environment:
+    PORT: "80"
+    AUTH_URL: "http://auth:8080"
+    USUARIOS_URL: "http://usuarios:8080"
+    LIVROS_URL: "http://livros:8080"
+    EMPRESTIMOS_URL: "http://emprestimos:8080"
+    
     depends_on:
       - usuarios
       - auth

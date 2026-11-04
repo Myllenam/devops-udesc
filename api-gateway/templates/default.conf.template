@@ -1,0 +1,48 @@
+server {
+    listen ${PORT};
+    server_name _;
+
+    proxy_connect_timeout 30s;
+    proxy_read_timeout 180s;
+    proxy_send_timeout 180s;
+
+    proxy_ssl_server_name on;
+
+    location /auth {
+        proxy_pass ${AUTH_URL};
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+    }
+
+    location /usuarios {
+        proxy_pass ${USUARIOS_URL};
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+    }
+
+    location /livros {
+        proxy_pass ${LIVROS_URL};
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+    }
+
+    location /emprestimos {
+        proxy_pass ${EMPRESTIMOS_URL};
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+    }
+
+    location = /health {
+        access_log off;
+        return 200 "Gateway OK\n";
+        add_header Content-Type text/plain;
+    }
+}
