@@ -85,7 +85,7 @@ jobs:
 
       - name: Gerar tags Docker
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ghcr.io/myllenam/devops-udesc-auth
           tags: |
