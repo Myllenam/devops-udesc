@@ -89,7 +89,7 @@ jobs:
             type=sha,format=long,prefix=sha-
 
       - name: Publicar imagem do API Gateway
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./api-gateway
           file: ./api-gateway/Dockerfile
