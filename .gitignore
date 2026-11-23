@@ -2,3 +2,4 @@
 .env.*
 !.env.example
 monitoring/prometheus/secrets/
+k8s/**/secret.yaml
