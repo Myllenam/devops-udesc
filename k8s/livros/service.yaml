@@ -1,0 +1,15 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: livros
+  labels:
+    app: livros
+spec:
+  type: ClusterIP
+  selector:
+    app: livros
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

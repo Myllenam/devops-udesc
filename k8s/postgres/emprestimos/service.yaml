@@ -1,0 +1,15 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-emprestimos
+  labels:
+    app: postgres-emprestimos
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres-emprestimos
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres

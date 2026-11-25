@@ -1,0 +1,18 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: livros-config
+data:
+  SERVER_PORT: "8080"
+  SPRING_PROFILES_ACTIVE: "k8s"
+
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-livros:5432/livros_db"
+
+  AUTH_SERVICE_URL: "http://auth:8080"
+
+  SPRING_RABBITMQ_HOST: "rabbitmq"
+  SPRING_RABBITMQ_PORT: "5672"
+
+  SWAGGER_ENABLED: "true"
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,prometheus"

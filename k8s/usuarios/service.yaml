@@ -1,0 +1,15 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: usuarios
+  labels:
+    app: usuarios
+spec:
+  type: ClusterIP
+  selector:
+    app: usuarios
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

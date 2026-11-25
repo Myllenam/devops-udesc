@@ -1,0 +1,54 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name _;
+
+        location = /gateway-health {
+            access_log off;
+            default_type text/plain;
+            return 200 "OK";
+        }
+
+        location /auth {
+            proxy_pass http://auth:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /usuarios {
+            proxy_pass http://usuarios:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /livros {
+            proxy_pass http://livros:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /emprestimos {
+            proxy_pass http://emprestimos:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location / {
+            default_type text/plain;
+            return 200 "API Gateway - Biblioteca Kubernetes";
+        }
+    }

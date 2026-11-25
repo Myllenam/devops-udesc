@@ -1,0 +1,49 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livros
+  labels:
+    app: livros
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: livros
+  template:
+    metadata:
+      labels:
+        app: livros
+    spec:
+      containers:
+        - name: livros
+          image: ghcr.io/myllenam/devops-udesc-livros:develop
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+
+          envFrom:
+            - configMapRef:
+                name: livros-config
+            - secretRef:
+                name: livros-secret
+
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
+
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 768Mi
